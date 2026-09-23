@@ -1,3 +1,4 @@
+using HeadlessDemo.Cms.Imaging;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ WebApplication app = builder.Build();
 
 await app.BootUmbracoAsync();
 
+// Signs preset image requests (/media/...?preset=...) before Umbraco's imaging middleware sees them.
+app.UseMiddleware<ImagePresetMiddleware>();
 
 app.UseUmbraco()
     .WithMiddleware(u =>

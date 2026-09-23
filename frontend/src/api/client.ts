@@ -1,7 +1,12 @@
-import type { Article, ArticleList, PagedResponse } from './types'
+import type { HomePage, NavigationItem, NewsTeaser, PagedResponse, Page } from './types'
 
-// Relative base URL: Vite proxies /umbraco to the CMS in development (see vite.config.ts).
-const BASE = `${import.meta.env.VITE_UMBRACO_URL ?? ''}/umbraco/delivery/api/v2`
+/** CMS origin. Empty in development and preview, where Vite proxies /umbraco and /media. */
+export const CMS_ORIGIN = import.meta.env.VITE_UMBRACO_URL ?? ''
+
+const BASE = `${CMS_ORIGIN}/umbraco/delivery/api/v2`
+
+// Media custom properties (alt text) are only included when expanded, also inside blocks.
+const EXPAND_IMAGES = 'properties[image,blocks[properties[image]]]'
 
 export class NotFoundError extends Error {}
 
@@ -17,24 +22,41 @@ async function get<T>(path: string, params?: Record<string, string>): Promise<T>
   return (await response.json()) as T
 }
 
-/** The root "Insights" page (route "/"). */
-export function getArticleList(): Promise<ArticleList> {
-  return get<ArticleList>('/content/item/')
+function encodePath(path: string): string {
+  const withSlash = path.endsWith('/') ? path : `${path}/`
+  return withSlash.split('/').map(encodeURIComponent).join('/')
 }
 
-/** Published articles under the root, in backoffice sort order. */
-export async function getArticles(): Promise<Article[]> {
-  const page = await get<PagedResponse<Article>>('/content', {
+/** Any page by its Umbraco route, e.g. "/our-bread/". The route decides which page component renders. */
+export function getPageByPath(path: string): Promise<Page> {
+  return get<Page>(`/content/item${encodePath(path)}`, { expand: EXPAND_IMAGES })
+}
+
+/** The root page. It carries the site settings (name, contact details, footer). */
+export function getSiteRoot(): Promise<HomePage> {
+  return get<HomePage>('/content/item/')
+}
+
+/** Top-level pages for the main navigation, in backoffice sort order. */
+export async function getNavigation(): Promise<NavigationItem[]> {
+  const page = await get<PagedResponse<NavigationItem>>('/content', {
     fetch: 'children:/',
-    filter: 'contentType:article',
+    fields: 'properties[hideFromNavigation]',
     sort: 'sortOrder:asc',
     take: '20',
   })
-  return page.items
+  return page.items.filter((item) => !item.properties.hideFromNavigation)
 }
 
-/** A single article by its Umbraco route, e.g. "/typing-the-delivery-api/". */
-export function getArticleByPath(path: string): Promise<Article> {
-  const encoded = path.split('/').map(encodeURIComponent).join('/')
-  return get<Article>(`/content/item${encoded}`)
+/** News items under a news list, newest first (publishDate sort is added on the CMS side). */
+export async function getNewsItems(newsListId: string, take = 20): Promise<NewsTeaser[]> {
+  const page = await get<PagedResponse<NewsTeaser>>('/content', {
+    fetch: `children:${newsListId}`,
+    filter: 'contentType:newsItem',
+    sort: 'publishDate:desc',
+    fields: 'properties[publishDate,teaser,image]',
+    expand: 'properties[image]',
+    take: String(take),
+  })
+  return page.items
 }
