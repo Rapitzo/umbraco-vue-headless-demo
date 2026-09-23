@@ -9,16 +9,15 @@ defineProps<{ block: QuoteBlock }>()
     <blockquote>
       <p>{{ block.properties.quote }}</p>
     </blockquote>
-    <figcaption v-if="block.properties.attribution">{{ block.properties.attribution }}</figcaption>
+    <figcaption v-if="block.properties.attribution" class="label">{{ block.properties.attribution }}</figcaption>
   </figure>
 </template>
 
 <style scoped>
 .quote {
   margin: 0;
-  padding-block: clamp(1.5rem, 4vw, 3rem);
-  border-block: 1px solid var(--line);
-  text-align: center;
+  padding-top: var(--space-lg);
+  border-top: var(--rule-ink);
 }
 
 blockquote {
@@ -26,19 +25,29 @@ blockquote {
 }
 
 blockquote p {
-  max-width: 20em;
-  margin: 0 auto;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  line-height: 1.2;
+  margin: 0;
+  max-width: 24ch;
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-stretch: 80%;
+  line-height: 1;
+  letter-spacing: var(--tracking-display);
+  text-indent: -0.4em;
+}
+
+blockquote p::before {
+  content: '“';
+  color: var(--color-accent);
+}
+
+blockquote p::after {
+  content: '”';
+  color: var(--color-accent);
 }
 
 figcaption {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
+  margin-top: var(--space-md);
 }
 </style>

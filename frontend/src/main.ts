@@ -1,5 +1,6 @@
-import '@fontsource-variable/fraunces'
-import '@fontsource-variable/source-sans-3'
+import '@fontsource-variable/bricolage-grotesque/standard.css'
+import '@fontsource-variable/newsreader/standard.css'
+import '@fontsource-variable/newsreader/standard-italic.css'
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'

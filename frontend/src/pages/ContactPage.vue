@@ -4,57 +4,72 @@ import { firstImage } from '../api/media'
 import type { ContactPage } from '../api/types'
 import ContactDetails from '../components/ContactDetails.vue'
 import ContactForm from '../components/ContactForm.vue'
+import OpeningHours from '../components/OpeningHours.vue'
 import PageHeader from '../components/PageHeader.vue'
 import ResponsiveImage from '../components/ResponsiveImage.vue'
 import { useSite } from '../composables/useSite'
 
 const props = defineProps<{ page: ContactPage }>()
 
-// Contact details are edited once, in the site settings, and shown here and in the footer.
+// Address and hours are edited once, in the site settings, and shown here and in the footer.
 const { settings } = useSite()
 const image = computed(() => firstImage(props.page.properties.image))
 </script>
 
 <template>
   <PageHeader :title="page.name" :intro="page.properties.intro" />
-  <div class="contact container">
-    <div class="contact__info">
-      <ContactDetails v-if="settings" :settings="settings" class="contact__details" />
-      <ResponsiveImage
-        v-if="image"
-        class="contact__image"
-        :media="image"
-        preset="standard"
-        sizes="(min-width: 64rem) 600px, 100vw"
-      />
-    </div>
-    <ContactForm :intro="page.properties.formIntro" />
+  <div class="visit page-grid">
+    <ResponsiveImage
+      v-if="image"
+      class="visit__image"
+      :media="image"
+      preset="standard"
+      sizes="(min-width: 48rem) 50vw, 100vw"
+    />
+    <section v-if="settings" class="visit__details" aria-labelledby="visit-where">
+      <h2 id="visit-where" class="label">Address</h2>
+      <ContactDetails :settings="settings" />
+      <h2 class="label visit__hours-label">Öppettider · Opening hours</h2>
+      <OpeningHours :hours="settings.openingHours" />
+    </section>
+    <ContactForm class="visit__form" :intro="page.properties.formIntro" />
   </div>
 </template>
 
 <style scoped>
-.contact {
-  display: grid;
-  gap: 3rem;
-  align-items: start;
+.visit {
+  row-gap: var(--space-2xl);
 }
 
-.contact__details {
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  margin-bottom: 2.5rem;
-}
-
-.contact__image {
+.visit__image {
+  grid-column: full;
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius);
 }
 
-@media (min-width: 64rem) {
-  .contact {
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+.visit .label {
+  margin-bottom: var(--space-sm);
+}
+
+.visit__hours-label {
+  margin-top: var(--space-xl);
+}
+
+@media (min-width: 48rem) {
+  .visit__image {
+    grid-column: full-start / 8;
+    grid-row: 1 / 3;
+    position: sticky;
+    top: var(--space-lg);
+  }
+
+  .visit__details {
+    grid-column: 9 / 14;
+  }
+
+  .visit__form {
+    grid-column: 9 / 14;
   }
 }
 </style>

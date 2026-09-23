@@ -6,11 +6,6 @@ defineProps<{ block: RichTextBlock }>()
 </script>
 
 <template>
-  <RichTextContent v-if="block.properties.text" class="rich-text" :markup="block.properties.text.markup" />
+  <RichTextContent v-if="block.properties.text" :markup="block.properties.text.markup" />
 </template>
 
-<style scoped>
-.rich-text {
-  max-width: 42rem;
-}
-</style>

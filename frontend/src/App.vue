@@ -17,11 +17,10 @@ import SiteHeader from './components/layout/SiteHeader.vue'
   position: absolute;
   left: 1rem;
   top: -4rem;
-  z-index: 10;
+  z-index: 2;
   padding: 0.6rem 1rem;
-  background: var(--ink);
-  color: var(--surface);
-  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .skip-link:focus {

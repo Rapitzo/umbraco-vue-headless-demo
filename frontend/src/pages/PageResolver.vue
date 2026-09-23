@@ -55,7 +55,11 @@ watch([page, notFound, settings], () => {
 
 <template>
   <NotFoundPage v-if="notFound" />
-  <p v-else-if="error" class="status container" role="alert">Sorry, this page could not be loaded. ({{ error }})</p>
+  <div v-else-if="error" class="page-grid">
+    <p class="status" role="alert">Sorry, this page could not be loaded. ({{ error }})</p>
+  </div>
   <component :is="templates[page.contentType]" v-else-if="page" :key="page.id" :page="page" />
-  <p v-else class="status container" aria-live="polite">Loading…</p>
+  <div v-else class="page-grid">
+    <p class="status" aria-live="polite">Loading…</p>
+  </div>
 </template>

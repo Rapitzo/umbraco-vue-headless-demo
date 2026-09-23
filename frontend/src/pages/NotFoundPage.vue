@@ -4,6 +4,6 @@ import PageHeader from '../components/PageHeader.vue'
 
 <template>
   <PageHeader title="Page not found" intro="The page may have moved, or the link is out of date.">
-    <RouterLink to="/" class="button">Go to the front page</RouterLink>
+    <p><RouterLink to="/" class="link-cta">Back to the front page</RouterLink></p>
   </PageHeader>
 </template>

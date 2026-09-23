@@ -30,7 +30,7 @@ function onSubmit() {
     <label for="contact-message">What would you like to order, and for when?</label>
     <textarea id="contact-message" v-model="form.message" name="message" rows="5" required />
 
-    <button type="submit" class="button">Send</button>
+    <button type="submit" class="contact-form__send">Send note</button>
     <p class="contact-form__status" role="status">
       <template v-if="submitted">Thanks. This is a demo site, so the message was not sent anywhere.</template>
     </p>
@@ -40,54 +40,102 @@ function onSubmit() {
 <style scoped>
 .contact-form {
   display: grid;
-  gap: 0.5rem;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  gap: var(--space-2xs);
+  padding-top: var(--space-md);
+  border-top: var(--rule-ink);
 }
 
 .contact-form h2 {
-  margin-bottom: 0.25rem;
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-xs);
 }
 
 .contact-form p {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-xs);
 }
 
 .contact-form__demo {
-  padding: 0.6rem 0.8rem;
-  background: var(--crumb);
-  border-radius: var(--radius);
-  font-size: 0.9375rem;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-muted);
 }
 
 label {
-  margin-top: 0.5rem;
+  margin-top: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-label);
   font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
+/* Fields are ruled lines, like an order slip. */
 input,
 textarea {
   width: 100%;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid #8f8274;
-  border-radius: var(--radius);
-  background: #fff;
-  color: var(--ink);
+  padding: var(--space-2xs) 0;
+  border: 0;
+  border-bottom: var(--rule-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-ink);
   font: inherit;
+}
+
+textarea {
+  resize: vertical;
+  background-image: linear-gradient(transparent calc(100% - 1px), var(--color-rule) 1px);
+  background-size: 100% 1.55em;
+  line-height: 1.55em;
+}
+
+input:hover,
+textarea:hover {
+  border-bottom-color: var(--color-accent);
 }
 
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 1px;
-  border-color: var(--focus);
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
-.button {
+input:user-invalid,
+textarea:user-invalid {
+  border-bottom-color: var(--color-accent-strong);
+  border-bottom-style: dashed;
+}
+
+.contact-form__send {
   justify-self: start;
-  margin-top: 1rem;
+  margin-top: var(--space-lg);
+  padding: var(--space-xs) var(--space-lg);
+  border: var(--rule-ink);
+  border-radius: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 700;
+  font-stretch: 85%;
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+
+.contact-form__send:hover {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+}
+
+.contact-form__send:active {
+  transform: translateY(1px);
+}
+
+.contact-form__send:disabled,
+input:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .contact-form__status:empty {

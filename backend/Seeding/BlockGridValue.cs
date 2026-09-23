@@ -13,8 +13,8 @@ public sealed record GridBlock(string ContentTypeAlias, int ColumnSpan, IReadOnl
 public sealed record GridArea(Guid Key, IReadOnlyList<GridBlock> Items);
 
 /// <summary>
-/// Serializes blocks to the Block Grid storage format used since Umbraco 15:
-/// layout (with column spans and areas) + contentData + settingsData + expose.
+/// Serializes blocks to the Block Grid and Block List storage formats used since Umbraco 15:
+/// layout (with column spans and areas for the grid) + contentData + settingsData + expose.
 /// </summary>
 public static class BlockGridValue
 {
@@ -28,13 +28,8 @@ public static class BlockGridValue
         object Layout(GridBlock block)
         {
             Guid key = Guid.NewGuid();
-            contentData.Add(new
-            {
-                key,
-                contentTypeKey = elementTypeKey(block.ContentTypeAlias),
-                values = block.Values.Select(v => new { alias = v.Key, value = v.Value, culture = (string?)null, segment = (string?)null }),
-            });
-            expose.Add(new { contentKey = key, culture = (string?)null, segment = (string?)null });
+            contentData.Add(ContentData(key, block, elementTypeKey));
+            expose.Add(Expose(key));
 
             object[] areas = block.Area is { } area
                 ? [new { key = area.Key, items = area.Items.Select(Layout).ToArray() }]
@@ -55,6 +50,42 @@ public static class BlockGridValue
             },
             JsonOptions);
     }
+
+    /// <summary>
+    /// Block List value, as an object so it can nest inside a block's property values.
+    /// Column spans and areas on the items are ignored; a list has neither.
+    /// </summary>
+    public static object BlockList(IEnumerable<GridBlock> items, Func<string, Guid> elementTypeKey)
+    {
+        var contentData = new List<object>();
+        var expose = new List<object>();
+        var layout = new List<object>();
+
+        foreach (GridBlock item in items)
+        {
+            Guid key = Guid.NewGuid();
+            contentData.Add(ContentData(key, item, elementTypeKey));
+            expose.Add(Expose(key));
+            layout.Add(new { contentKey = key, settingsKey = (Guid?)null });
+        }
+
+        return new
+        {
+            layout = new Dictionary<string, object> { [Constants.PropertyEditors.Aliases.BlockList] = layout },
+            contentData,
+            settingsData = Array.Empty<object>(),
+            expose,
+        };
+    }
+
+    private static object ContentData(Guid key, GridBlock block, Func<string, Guid> elementTypeKey) => new
+    {
+        key,
+        contentTypeKey = elementTypeKey(block.ContentTypeAlias),
+        values = block.Values.Select(v => new { alias = v.Key, value = v.Value, culture = (string?)null, segment = (string?)null }),
+    };
+
+    private static object Expose(Guid key) => new { contentKey = key, culture = (string?)null, segment = (string?)null };
 
     /// <summary>Rich text editor value (markup plus embedded blocks, none here).</summary>
     public static object RichText(string markup) => new { markup, blocks = (object?)null };

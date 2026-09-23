@@ -7,13 +7,5 @@ defineProps<{ page: HomePage }>()
 
 <template>
   <h1 class="visually-hidden">{{ page.properties.siteName }}</h1>
-  <div class="home container">
-    <BlockGrid :model="page.properties.blocks" />
-  </div>
+  <BlockGrid :model="page.properties.blocks" />
 </template>
-
-<style scoped>
-.home {
-  padding-top: clamp(1.5rem, 5vw, 4rem);
-}
-</style>

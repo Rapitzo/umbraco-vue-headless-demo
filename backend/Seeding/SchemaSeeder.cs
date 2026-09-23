@@ -8,9 +8,9 @@ using Umbraco.Cms.Core.Strings;
 namespace HeadlessDemo.Cms.Seeding;
 
 /// <summary>
-/// Creates the content model: a page composition, six block element types, a Block Grid
-/// data type and five document types. Every item is get-or-create, so running it again
-/// against an existing database changes nothing.
+/// Creates the content model: a page composition, nine block element types, a Block Grid,
+/// a Block List for the bake board rows and five document types. Every item is get-or-create,
+/// so running it again against an existing database changes nothing.
 /// </summary>
 public sealed class SchemaSeeder
 {
@@ -18,6 +18,7 @@ public sealed class SchemaSeeder
     public static readonly Guid CardsAreaKey = new("6f1d6a52-2c0e-4b52-9a51-3f3c1b7d9e10");
 
     private const string BlockGridName = "Page Blocks";
+    private const string BakeItemsName = "Bake Board Items";
 
     private readonly IContentTypeService _contentTypeService;
     private readonly IMediaTypeService _mediaTypeService;
@@ -51,6 +52,7 @@ public sealed class SchemaSeeder
         IDataType contentPicker = await GetDataTypeAsync(Constants.DataTypes.Guids.ContentPickerGuid);
         IDataType checkbox = await GetDataTypeAsync(Constants.DataTypes.Guids.CheckboxGuid);
         IDataType datePicker = await GetDataTypeAsync(Constants.DataTypes.Guids.DatePickerGuid);
+        IDataType numeric = await GetDataTypeAsync(Constants.DataTypes.Guids.NumericGuid);
 
         await EnsureImageAltTextAsync(textstring);
 
@@ -85,7 +87,38 @@ public sealed class SchemaSeeder
         IContentType cardRow = await EnsureTypeAsync("cardRowBlock", "Card row", "icon-thumbnails-small", isElement: true, type =>
             AddProperty(type, textstring, "heading", "Heading"));
 
-        IDataType blocks = await EnsureBlockGridAsync(hero, richTextBlock, imageBlock, quote, cardRow, card);
+        IContentType story = await EnsureTypeAsync("storyBlock", "Story", "icon-book-alt", isElement: true, type =>
+        {
+            AddProperty(type, textstring, "heading", "Heading", mandatory: true);
+            AddProperty(type, richText, "text", "Text", mandatory: true);
+            AddProperty(type, image, "image", "Image", mandatory: true);
+            AddProperty(type, textstring, "caption", "Caption");
+            AddProperty(type, checkbox, "imageOnLeft", "Image on the left");
+        });
+
+        // Today's bakes. The rows are a Block List inside the block, so editors reorder them and
+        // tick "sold out" during the day without touching the page layout.
+        IContentType bakeItem = await EnsureTypeAsync("bakeItemBlock", "Bake", "icon-bread", isElement: true, type =>
+        {
+            AddProperty(type, textstring, "name", "Name", mandatory: true);
+            AddProperty(type, textstring, "note", "Note (Swedish name, weight)");
+            AddProperty(type, textstring, "readyAt", "Out of the oven (hh:mm)");
+            AddProperty(type, numeric, "price", "Price (SEK)", mandatory: true);
+            AddProperty(type, checkbox, "soldOut", "Sold out");
+        });
+        IDataType bakeItems = await EnsureBlockListAsync(BakeItemsName, bakeItem);
+        IContentType bakeBoard = await EnsureTypeAsync("bakeBoardBlock", "Bake board", "icon-list", isElement: true, type =>
+        {
+            AddProperty(type, textstring, "heading", "Heading", mandatory: true);
+            AddProperty(type, textarea, "intro", "Intro");
+            AddProperty(type, bakeItems, "items", "Bakes");
+        });
+
+        IDataType blocks = await EnsureBlockGridAsync(
+            cardRow,
+            card,
+            fullWidth: [hero, bakeBoard, story],
+            flexible: [richTextBlock, imageBlock, quote]);
 
         // Shared page properties, composed into every document type
         IContentType pageBase = await EnsureTypeAsync("pageBase", "Page base", "icon-settings", isElement: false, type =>
@@ -138,6 +171,7 @@ public sealed class SchemaSeeder
             AddProperty(type, textstring, "phone", "Phone", group: settings, groupName: "Site settings");
             AddProperty(type, textstring, "email", "Email", group: settings, groupName: "Site settings");
             AddProperty(type, textarea, "footerNote", "Footer note", group: settings, groupName: "Site settings");
+            AddProperty(type, textstring, "mapUrl", "Map link (URL)", group: settings, groupName: "Site settings");
 
             type.AllowedContentTypes =
             [
@@ -208,13 +242,42 @@ public sealed class SchemaSeeder
         string groupName = "Content") =>
         type.AddPropertyType(new PropertyType(_shortStringHelper, dataType, alias) { Name = name, Mandatory = mandatory }, group, groupName);
 
+    private async Task<IDataType> EnsureBlockListAsync(string name, IContentType elementType)
+    {
+        if (await _dataTypeService.GetAsync(name) is { } existing)
+        {
+            return existing;
+        }
+
+        IDataEditor editor = _propertyEditors[Constants.PropertyEditors.Aliases.BlockList]
+            ?? throw new InvalidOperationException("Block List property editor not found.");
+
+        var dataType = new DataType(editor, _configSerializer)
+        {
+            Name = name,
+            EditorUiAlias = "Umb.PropertyEditorUi.BlockList",
+            ConfigurationData = new Dictionary<string, object>
+            {
+                ["blocks"] = new[] { new BlockListConfiguration.BlockConfiguration { ContentElementTypeKey = elementType.Key } },
+            },
+        };
+
+        var result = await _dataTypeService.CreateAsync(dataType, Constants.Security.SuperUserKey);
+        if (!result.Success)
+        {
+            throw new InvalidOperationException($"Could not create the '{name}' Block List data type: {result.Status}");
+        }
+
+        return result.Result;
+    }
+
+    /// <param name="fullWidth">Blocks that always take the whole row; the frontend may bleed them to the page edge.</param>
+    /// <param name="flexible">Blocks editors can place at 12, 8 or 6 columns.</param>
     private async Task<IDataType> EnsureBlockGridAsync(
-        IContentType hero,
-        IContentType richText,
-        IContentType image,
-        IContentType quote,
         IContentType cardRow,
-        IContentType card)
+        IContentType card,
+        IContentType[] fullWidth,
+        IContentType[] flexible)
     {
         if (await _dataTypeService.GetAsync(BlockGridName) is { } existing)
         {
@@ -235,10 +298,6 @@ public sealed class SchemaSeeder
                 ["gridColumns"] = 12,
                 ["blocks"] = new object[]
                 {
-                    RootBlock(hero, 12),
-                    RootBlock(richText, 12, 8, 6),
-                    RootBlock(image, 12, 6),
-                    RootBlock(quote, 12, 6),
                     new
                     {
                         contentElementTypeKey = cardRow.Key,
@@ -265,7 +324,10 @@ public sealed class SchemaSeeder
                         allowInAreas = true,
                         columnSpanOptions = Spans(4, 6, 12),
                     },
-                },
+                }
+                .Concat(fullWidth.Select(type => RootBlock(type, 12)))
+                .Concat(flexible.Select(type => RootBlock(type, 12, 8, 6)))
+                .ToArray(),
             },
         };
 

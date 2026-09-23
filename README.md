@@ -8,12 +8,13 @@ Built by Rickard Lindbom · Lindforge Digital Studio · [Available for contract 
 
 ![Rågklocka front page at desktop width](docs/screenshots/home-desktop.jpg)
 
-<img src="docs/screenshots/news-mobile.jpg" alt="The news page on a phone" width="260">
+<img src="docs/screenshots/home-mobile.jpg" alt="The front page on a phone, with the hero photo and the bake board" width="260">
 
 ## What it demonstrates
 
-- Content model in code. `backend/Seeding/SchemaSeeder.cs` creates a page composition (meta description, hide from navigation), six block element types, a Block Grid data type and five document types: Home, Content page, News list, News item and Contact page. Site settings (name, logo text, tagline, address, opening hours, phone, email, footer note) live in their own tab on the Home node. Every step is get-or-create, so the seeder runs on each boot without changing anything that already exists.
-- Block Grid to Vue components. The Block Grid (not Block List) has a hero, rich text, image, quote, card row and card. The card row has a `cards` area that only accepts cards, and blocks have column span options (for example rich text at 12, 8 or 6 columns). `BlockGrid.vue` maps each element type alias to one component and lays items out on the grid's own column count. Blocks the frontend does not know are skipped instead of breaking the page.
+- Content model in code. `backend/Seeding/SchemaSeeder.cs` creates a page composition (meta description, hide from navigation), nine block element types, a Block Grid, a Block List for the bake board rows and five document types: Home, Content page, News list, News item and Contact page. Site settings (name, logo text, tagline, address, opening hours, phone, email, map link, footer note) live in their own tab on the Home node. Every step is get-or-create, so the seeder runs on each boot without changing anything that already exists.
+- Block Grid to Vue components. The Block Grid (not Block List) has a hero, a bake board, a story, rich text, image, quote, card row and card. The card row has a `cards` area that only accepts cards, and the flexible blocks have column span options (rich text at 12, 8 or 6 columns). `BlockGrid.vue` maps each element type alias to one component, packs items into rows the way Umbraco does, and lets the hero, bake board and story bleed to the page edges. Blocks the frontend does not know are skipped instead of breaking the page.
+- A bake board. "Dagens bröd" lists today's bakes with the time each batch came out of the oven, the price in SEK and a sold-out flag. The rows are a Block List inside the block, so staff can reorder them or mark a bake as sold out without touching the page layout. It renders as a table styled like a printed price list.
 - Navigation from the content tree. The main menu is the root's children from the Delivery API, in backoffice sort order, minus pages with "Hide from navigation" ticked. Nothing is hard-coded.
 - Routes resolved from content paths. The router has one catch-all route. `PageResolver.vue` fetches the item at the current path and picks the page component from its content type, so editors own the URLs and the page templates follow the document types.
 - Media through the Delivery API. Nine photos are imported into the media library on first boot, with alt text in a property added to the Image media type. The frontend asks for them by media URL with a named preset (`wide`, `standard`, `square`, `original`) and a width from a fixed list, and builds `srcset` from those.
@@ -39,8 +40,9 @@ The contact form is a demo. It validates and says thanks, but nothing is sent or
 |   ContentSeeder  pages, blocks |   |   contentPage -> ContentPage   |
 |                                |   |   newsList    -> NewsListPage  |
 | Block Grid "Page Blocks"       |   |   newsItem    -> NewsItemPage  |
-|   hero, richText, image,       |   |   contactPage -> ContactPage   |
-|   quote, cardRow[cards: card]  |   | BlockGrid.vue: alias -> block  |
+|   hero, bakeBoard, story,      |   |   contactPage -> ContactPage   |
+|   richText, image, quote,      |   |                                |
+|   cardRow[cards: card]         |   | BlockGrid.vue: alias -> block  |
 |                                |   | api/client.ts  (fetch)         |
 | Content Delivery API v2        |<--| api/types.ts   (types)         |
 |   /umbraco/delivery/api/v2     |   | api/media.ts   (image presets) |
@@ -117,7 +119,7 @@ For a production frontend build that talks to a CMS on another origin, set `VITE
 backend/
   Program.cs                           Umbraco host with AddDeliveryApi() and the image preset middleware
   Seeding/SiteSeeder.cs                startup handler that runs the three seeders
-  Seeding/SchemaSeeder.cs              document types, element types, Block Grid
+  Seeding/SchemaSeeder.cs              document types, element types, Block Grid, Block List
   Seeding/MediaSeeder.cs               imports Seeding/Media/*.jpg with alt text
   Seeding/ContentSeeder.cs             pages, news items and their blocks
   Seeding/BlockGridValue.cs            Block Grid storage format (layout, areas, contentData)
@@ -150,7 +152,7 @@ All photos are from [Unsplash](https://unsplash.com) and used under the [Unsplas
 | `croissants.jpg` | Conor Brown ([@commonboxturtle](https://unsplash.com/@commonboxturtle)) | https://unsplash.com/photos/a-bunch-of-croissants-that-are-on-a-table-sqkXyyj4WdE |
 | `coffee.jpg` | Daniel Seßler ([@danielsessler](https://unsplash.com/@danielsessler)) | https://unsplash.com/photos/two-cups-of-coffee-sitting-on-top-of-a-wooden-table-wYKEz3GPdCA |
 
-Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces) and [Source Sans 3](https://fonts.google.com/specimen/Source+Sans+3), both under the SIL Open Font License, self-hosted through Fontsource.
+Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Newsreader](https://fonts.google.com/specimen/Newsreader), both under the SIL Open Font License, self-hosted through Fontsource.
 
 ## License
 

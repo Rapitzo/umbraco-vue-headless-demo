@@ -11,7 +11,7 @@ defineProps<{ block: ImageBlock }>()
     <ResponsiveImage
       :media="firstImage(block.properties.image)!"
       preset="standard"
-      sizes="(min-width: 75rem) 1200px, 100vw"
+      sizes="(min-width: 76rem) 1200px, 100vw"
     />
     <figcaption v-if="block.properties.caption">{{ block.properties.caption }}</figcaption>
   </figure>
@@ -27,7 +27,6 @@ defineProps<{ block: ImageBlock }>()
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius);
 }
 
 /* Wide placements get a wider crop so the image does not dominate the page. */
@@ -38,8 +37,10 @@ defineProps<{ block: ImageBlock }>()
 }
 
 figcaption {
-  margin-top: 0.75rem;
-  font-size: 0.9375rem;
-  color: var(--ink-muted);
+  margin-top: var(--space-xs);
+  max-width: 48ch;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-muted);
 }
 </style>

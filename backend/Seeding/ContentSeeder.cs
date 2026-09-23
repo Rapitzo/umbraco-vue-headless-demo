@@ -76,12 +76,21 @@ public sealed class ContentSeeder
                 media["hero-flour"],
                 "See what we bake",
                 bread),
-            RichText(
-                6,
-                "<h2>A bakery with a café in the front</h2>" +
+            BakeBoard(
+                "Dagens bröd",
+                "Today's bake, with the time each batch came out of the oven. Prices in SEK.",
+                Bake("Rye loaf, sunflower seeds", "Rågbröd · 900 g", "07:10", 68),
+                Bake("Country wheat loaf", "Lantbröd · 750 g", "07:40", 62),
+                Bake("Cardamom bun", "Kardemummabulle", "08:15", 38),
+                Bake("Cinnamon bun", "Kanelbulle", "08:15", 36),
+                Bake("Rye crispbread", "Knäckebröd · 250 g bag", "06:40", 55),
+                Bake("Croissant", "Saturdays only", "09:00", 34, soldOut: true)),
+            Story(
+                "A bakery with a café in the front",
                 "<p>The ovens are twelve steps from the tables. Most mornings you can hear the first loaves crackle as they cool on the rack by the window.</p>" +
-                "<p>We serve coffee from a small roaster, buns straight from the tray and open sandwiches on our own rye until the bread runs out.</p>"),
-            Image(6, media["cafe-interior"], "The café seats twenty-two. The long table is first come, first served."),
+                "<p>We serve coffee from a small roaster, buns straight from the tray and open sandwiches on our own rye until the bread runs out.</p>",
+                media["cafe-interior"],
+                "The café seats twenty-two. The long table is first come, first served."),
             CardRow(
                 "Plan your visit",
                 Card("Our bread", "Rye, wheat and what we bake on which day.", media["loaf"], bread),
@@ -122,11 +131,13 @@ public sealed class ContentSeeder
         page.SetValue("metaDescription", "How Rågklocka started, where the grain comes from and why the bakery opens at seven.");
         SetBlocks(
             page,
-            RichText(
-                8,
-                "<h2>How it started</h2>" +
+            Story(
+                "How it started",
                 "<p>Rågklocka opened in an old corner shop with one deck oven and a hand-written menu. The name means rye clock: the rye decides when the day starts.</p>" +
-                "<p>Today there are two ovens, a café counter and a bake room that runs from four in the morning. The menu is still short on purpose.</p>"),
+                "<p>Today there are two ovens, a café counter and a bake room that runs from four in the morning. The menu is still short on purpose.</p>",
+                media["kneading"],
+                "Every loaf is still shaped by hand.",
+                imageOnLeft: true),
             Image(12, media["rye-field"], "Our rye and wheat are grown about twenty minutes north of the bakery."),
             RichText(
                 8,
@@ -213,6 +224,34 @@ public sealed class ContentSeeder
             ["image"] = BlockGridValue.Image(image),
             ["ctaLabel"] = ctaLabel,
             ["ctaLink"] = BlockGridValue.Document(ctaLink.Key),
+        });
+
+    private GridBlock BakeBoard(string heading, string intro, params GridBlock[] bakes) =>
+        new("bakeBoardBlock", 12, new Dictionary<string, object?>
+        {
+            ["heading"] = heading,
+            ["intro"] = intro,
+            ["items"] = BlockGridValue.BlockList(bakes, ElementTypeKey),
+        });
+
+    private static GridBlock Bake(string name, string note, string readyAt, int price, bool soldOut = false) =>
+        new("bakeItemBlock", 12, new Dictionary<string, object?>
+        {
+            ["name"] = name,
+            ["note"] = note,
+            ["readyAt"] = readyAt,
+            ["price"] = price,
+            ["soldOut"] = soldOut,
+        });
+
+    private static GridBlock Story(string heading, string markup, Guid image, string caption, bool imageOnLeft = false) =>
+        new("storyBlock", 12, new Dictionary<string, object?>
+        {
+            ["heading"] = heading,
+            ["text"] = BlockGridValue.RichText(markup),
+            ["image"] = BlockGridValue.Image(image),
+            ["caption"] = caption,
+            ["imageOnLeft"] = imageOnLeft,
         });
 
     private static GridBlock RichText(int columnSpan, string markup) =>

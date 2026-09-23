@@ -7,78 +7,80 @@ defineProps<{ block: CardBlock }>()
 </script>
 
 <template>
-  <article class="card">
-    <ResponsiveImage
-      v-if="firstImage(block.properties.image)"
-      class="card__image"
-      :media="firstImage(block.properties.image)!"
-      preset="standard"
-      sizes="(min-width: 48rem) 400px, 100vw"
-    />
-    <div class="card__body">
-      <h3 class="card__title">
-        <RouterLink v-if="block.properties.link" :to="block.properties.link.route.path" class="card__link">
-          {{ block.properties.title }}
-        </RouterLink>
-        <template v-else>{{ block.properties.title }}</template>
-      </h3>
-      <p v-if="block.properties.text">{{ block.properties.text }}</p>
+  <article class="tile">
+    <div v-if="firstImage(block.properties.image)" class="tile__frame">
+      <ResponsiveImage
+        class="tile__image"
+        :media="firstImage(block.properties.image)!"
+        preset="original"
+        sizes="(min-width: 48rem) 45vw, 100vw"
+      />
     </div>
+    <h3 class="tile__title">
+      <RouterLink v-if="block.properties.link" :to="block.properties.link.route.path" class="tile__link">
+        {{ block.properties.title }}
+      </RouterLink>
+      <template v-else>{{ block.properties.title }}</template>
+    </h3>
+    <p v-if="block.properties.text" class="tile__text">{{ block.properties.text }}</p>
   </article>
 </template>
 
 <style scoped>
-.card {
+.tile {
   position: relative;
-  height: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+}
+
+.tile__frame {
   overflow: hidden;
-  transition: border-color 150ms ease;
+  aspect-ratio: var(--tile-ratio, 4 / 3);
 }
 
-.card:hover {
-  border-color: var(--rye);
-}
-
-.card__image {
+.tile__image {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
+  transition: transform var(--dur-long) var(--ease-out);
 }
 
-.card__body {
-  padding: 1.25rem 1.5rem 1.5rem;
+.tile__title {
+  margin-top: var(--space-sm);
+  font-size: var(--text-lg);
 }
 
-.card__body p {
-  margin: 0;
-  color: var(--ink-muted);
-}
-
-.card__link {
-  color: inherit;
+.tile__link {
+  color: var(--color-ink);
   text-decoration: none;
 }
 
-/* The whole card is clickable, but only the title is the accessible link. */
-.card__link::after {
+.tile__link::after {
   content: '';
   position: absolute;
   inset: 0;
 }
 
-.card:hover .card__link {
+.tile__text {
+  margin: var(--space-2xs) 0 0;
+  max-width: 36ch;
+  color: var(--color-muted);
+}
+
+.tile:hover .tile__image {
+  transform: scale(1.03);
+}
+
+.tile:hover .tile__link {
+  color: var(--color-accent-strong);
   text-decoration: underline;
+  text-decoration-thickness: 2px;
 }
 
-.card:has(.card__link:focus-visible) {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+.tile:has(.tile__link:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 6px;
 }
 
-.card__link:focus-visible {
+.tile__link:focus-visible {
   outline: none;
 }
 </style>

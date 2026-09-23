@@ -8,7 +8,5 @@ defineProps<{ page: ContentPage }>()
 
 <template>
   <PageHeader :title="page.name" :intro="page.properties.intro" />
-  <div class="container">
-    <BlockGrid :model="page.properties.blocks" />
-  </div>
+  <BlockGrid :model="page.properties.blocks" />
 </template>

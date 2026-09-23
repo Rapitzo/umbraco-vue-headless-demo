@@ -66,8 +66,34 @@ export type CardBlock = ApiElement<
   { title: string; text: string | null; image: MediaItem[] | null; link: ContentLink | null }
 >
 
+export type StoryBlock = ApiElement<
+  'storyBlock',
+  { heading: string; text: RichText | null; image: MediaItem[] | null; caption: string | null; imageOnLeft: boolean | null }
+>
+
+export type BakeItemBlock = ApiElement<
+  'bakeItemBlock',
+  { name: string; note: string | null; readyAt: string | null; price: number | null; soldOut: boolean | null }
+>
+export type BakeBoardBlock = ApiElement<
+  'bakeBoardBlock',
+  { heading: string; intro: string | null; items: BlockListModel<BakeItemBlock> | null }
+>
+
 // Discriminated union on contentType: add new block types here and in BlockGrid.vue.
-export type GridBlock = HeroBlock | RichTextBlock | ImageBlock | QuoteBlock | CardRowBlock | CardBlock
+export type GridBlock =
+  | HeroBlock
+  | RichTextBlock
+  | ImageBlock
+  | QuoteBlock
+  | CardRowBlock
+  | CardBlock
+  | StoryBlock
+  | BakeBoardBlock
+
+export interface BlockListModel<T> {
+  items: { content: T }[]
+}
 
 export interface BlockGridArea {
   alias: string
@@ -106,6 +132,7 @@ export type HomePage = ApiContent<
     phone: string | null
     email: string | null
     footerNote: string | null
+    mapUrl: string | null
   }
 >
 

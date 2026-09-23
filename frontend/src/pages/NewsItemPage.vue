@@ -3,9 +3,9 @@ import { computed } from 'vue'
 import { firstImage } from '../api/media'
 import type { NewsItemPage } from '../api/types'
 import BlockGrid from '../components/BlockGrid.vue'
+import DateMark from '../components/DateMark.vue'
 import PageHeader from '../components/PageHeader.vue'
 import ResponsiveImage from '../components/ResponsiveImage.vue'
-import { formatDate } from '../utils/formatDate'
 
 const props = defineProps<{ page: NewsItemPage }>()
 
@@ -15,39 +15,36 @@ const listPath = computed(() => props.page.route.path.replace(/[^/]+\/$/, ''))
 </script>
 
 <template>
-  <article>
+  <article class="news-item">
     <PageHeader :title="page.name" :intro="page.properties.teaser">
-      <p class="meta">
-        <time :datetime="page.properties.publishDate">{{ formatDate(page.properties.publishDate) }}</time>
-        <span aria-hidden="true"> · </span>
-        <RouterLink :to="listPath">All news</RouterLink>
-      </p>
+      <template #meta>
+        <DateMark :value="page.properties.publishDate" />
+      </template>
     </PageHeader>
-    <div class="container">
-      <ResponsiveImage
-        v-if="image"
-        class="news-image"
-        :media="image"
-        preset="wide"
-        sizes="(min-width: 75rem) 1200px, 100vw"
-        eager
-      />
-      <BlockGrid :model="page.properties.blocks" />
+    <div v-if="image" class="page-grid">
+      <ResponsiveImage class="news-item__image" :media="image" preset="wide" sizes="100vw" eager />
     </div>
+    <BlockGrid class="news-item__body" :model="page.properties.blocks" />
+    <p class="news-item__back page-grid">
+      <RouterLink :to="listPath" class="link-cta">More from the bakery</RouterLink>
+    </p>
   </article>
 </template>
 
 <style scoped>
-.meta {
-  margin: 1.5rem 0 0;
-  color: var(--ink-muted);
-}
-
-.news-image {
+.news-item__image {
+  grid-column: full;
   width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: 44rem;
   object-fit: cover;
-  border-radius: var(--radius);
-  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.news-item__body {
+  margin-top: var(--space-2xl);
+}
+
+.news-item__back {
+  margin: var(--space-2xl) 0 0;
 }
 </style>
