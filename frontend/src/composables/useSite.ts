@@ -6,6 +6,9 @@ import type { HomePage, NavigationItem } from '../api/types'
 const settings = ref<HomePage['properties'] | null>(null)
 const navigation = ref<NavigationItem[]>([])
 const error = ref<string | null>(null)
+// Content type of the page on screen, set by PageResolver. The footer uses it to skip
+// details the page itself already shows.
+const pageType = ref<string | null>(null)
 let loading: Promise<void> | null = null
 
 function load(): Promise<void> {
@@ -22,5 +25,5 @@ function load(): Promise<void> {
 
 export function useSite() {
   loading ??= load()
-  return { settings, navigation, error }
+  return { settings, navigation, error, pageType }
 }

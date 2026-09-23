@@ -28,8 +28,7 @@ const monthYear = computed(() =>
 .date-mark__day {
   font-family: var(--font-display);
   font-size: var(--text-xl);
-  font-weight: 800;
-  font-stretch: 75%;
+  font-weight: 400;
   letter-spacing: var(--tracking-display);
   line-height: 0.85;
   color: var(--color-accent);

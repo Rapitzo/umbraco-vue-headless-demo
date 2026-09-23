@@ -106,8 +106,7 @@ const headingId = computed(() => `bake-board-${props.block.id}`)
   display: block;
   font-family: var(--font-display);
   font-size: var(--text-md);
-  font-weight: 700;
-  font-stretch: 85%;
+  font-weight: 400;
   letter-spacing: -0.015em;
   line-height: 1.1;
 }
@@ -148,10 +147,9 @@ tbody .board__num {
 
 .board__price {
   min-width: 4.5ch;
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-md);
   font-weight: 700;
-  font-stretch: 85%;
 }
 
 .is-sold-out .board__title {

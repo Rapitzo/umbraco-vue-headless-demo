@@ -41,8 +41,7 @@ dt {
 
 dd {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-weight: 700;
-  font-stretch: 85%;
 }
 </style>

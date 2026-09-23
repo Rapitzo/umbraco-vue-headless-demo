@@ -8,9 +8,9 @@ using Umbraco.Cms.Core.Strings;
 namespace HeadlessDemo.Cms.Seeding;
 
 /// <summary>
-/// Creates the content model: a page composition, nine block element types, a Block Grid,
-/// a Block List for the bake board rows and five document types. Every item is get-or-create,
-/// so running it again against an existing database changes nothing.
+/// Creates the content model: a page composition, eleven block element types, a Block Grid,
+/// Block Lists for the bake board rows and cinema cards, and five document types. Every item
+/// is get-or-create, so running it again against an existing database changes nothing.
 /// </summary>
 public sealed class SchemaSeeder
 {
@@ -19,6 +19,7 @@ public sealed class SchemaSeeder
 
     private const string BlockGridName = "Page Blocks";
     private const string BakeItemsName = "Bake Board Items";
+    private const string CinemaCardsName = "Cinema Cards";
 
     private readonly IContentTypeService _contentTypeService;
     private readonly IMediaTypeService _mediaTypeService;
@@ -105,6 +106,7 @@ public sealed class SchemaSeeder
             AddProperty(type, textstring, "readyAt", "Out of the oven (hh:mm)");
             AddProperty(type, numeric, "price", "Price (SEK)", mandatory: true);
             AddProperty(type, checkbox, "soldOut", "Sold out");
+            AddProperty(type, image, "image", "Image (transparent PNG cutout)");
         });
         IDataType bakeItems = await EnsureBlockListAsync(BakeItemsName, bakeItem);
         IContentType bakeBoard = await EnsureTypeAsync("bakeBoardBlock", "Bake board", "icon-list", isElement: true, type =>
@@ -114,10 +116,58 @@ public sealed class SchemaSeeder
             AddProperty(type, bakeItems, "items", "Bakes");
         });
 
+        // Scroll-driven hero: a sticky stage of stacked image layers that part, blur and zoom as
+        // the visitor scrolls, then two story panels, a card slider and today's bake board. Layers are transparent
+        // PNG cutouts; any layer left empty is skipped.
+        IContentType cinemaCard = await EnsureTypeAsync("cinemaCardBlock", "Cinema card", "icon-document", isElement: true, type =>
+        {
+            AddProperty(type, textstring, "kicker", "Kicker");
+            AddProperty(type, textstring, "title", "Title", mandatory: true);
+            AddProperty(type, textarea, "text", "Text");
+            AddProperty(type, image, "icon", "Icon (transparent PNG)");
+            AddProperty(type, contentPicker, "link", "Links to");
+        });
+        IDataType cinemaCards = await EnsureBlockListAsync(CinemaCardsName, cinemaCard);
+        IContentType cinema = await EnsureTypeAsync("cinemaBlock", "Cinema scroll", "icon-movie-alt", isElement: true, type =>
+        {
+            AddProperty(type, textstring, "heading", "Title", mandatory: true);
+            AddProperty(type, textarea, "intro", "Intro");
+            AddProperty(type, textstring, "tags", "Tags (comma-separated)");
+
+            const string first = "firstPanel";
+            AddProperty(type, textstring, "firstHeading", "Heading", group: first, groupName: "First panel");
+            AddProperty(type, textarea, "firstText", "Text", group: first, groupName: "First panel");
+            AddProperty(type, textstring, "fact1Value", "Fact 1 value", group: first, groupName: "First panel");
+            AddProperty(type, textstring, "fact1Label", "Fact 1 label", group: first, groupName: "First panel");
+            AddProperty(type, textstring, "fact2Value", "Fact 2 value", group: first, groupName: "First panel");
+            AddProperty(type, textstring, "fact2Label", "Fact 2 label", group: first, groupName: "First panel");
+
+            const string second = "secondPanel";
+            AddProperty(type, textstring, "secondHeading", "Heading", group: second, groupName: "Second panel");
+            AddProperty(type, textarea, "secondText", "Text", group: second, groupName: "Second panel");
+            AddProperty(type, textstring, "ctaLabel", "Button label", group: second, groupName: "Second panel");
+            AddProperty(type, contentPicker, "ctaLink", "Button links to", group: second, groupName: "Second panel");
+
+            AddProperty(type, cinemaCards, "cards", "Cards", group: "cards", groupName: "Cards");
+
+            // Final scene: today's bakes, the same rows as the bake board block.
+            const string board = "board";
+            AddProperty(type, textstring, "boardHeading", "Heading", group: board, groupName: "Bake board");
+            AddProperty(type, textarea, "boardIntro", "Intro", group: board, groupName: "Bake board");
+            AddProperty(type, bakeItems, "bakes", "Bakes", group: board, groupName: "Bake board");
+
+            const string layers = "layers";
+            AddProperty(type, image, "skyLayer", "Sky (full frame, back)", group: layers, groupName: "Scene layers");
+            AddProperty(type, image, "backLayer", "Background (cutout)", group: layers, groupName: "Scene layers");
+            AddProperty(type, image, "foregroundLayer", "Foreground subject (cutout)", group: layers, groupName: "Scene layers");
+            AddProperty(type, image, "splitLeftLayer", "Split frame (cutout, content on the left; mirrored for the right)", group: layers, groupName: "Scene layers");
+            AddProperty(type, image, "closeUpLayer", "Close-up (full frame)", group: layers, groupName: "Scene layers");
+        });
+
         IDataType blocks = await EnsureBlockGridAsync(
             cardRow,
             card,
-            fullWidth: [hero, bakeBoard, story],
+            fullWidth: [cinema, hero, bakeBoard, story],
             flexible: [richTextBlock, imageBlock, quote]);
 
         // Shared page properties, composed into every document type

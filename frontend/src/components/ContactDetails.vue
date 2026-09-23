@@ -24,8 +24,7 @@ const phoneHref = computed(() => `tel:${(props.settings.phone ?? '').replace(/[^
   white-space: pre-line;
   font-family: var(--font-display);
   font-size: var(--text-md);
-  font-weight: 700;
-  font-stretch: 85%;
+  font-weight: 400;
   line-height: 1.15;
 }
 

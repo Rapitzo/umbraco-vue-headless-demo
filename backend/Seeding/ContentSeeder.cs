@@ -29,7 +29,7 @@ public sealed class ContentSeeder
         IContent news = Save(_contentService.Create("News", home, "newsList"));
         IContent visit = Save(_contentService.Create("Visit us", home, "contactPage"));
 
-        SetHome(home, media, bread, news, visit);
+        SetHome(home, media, bread, about, news, visit);
         SetBread(bread, media);
         SetAbout(about, media);
         SetNewsList(news);
@@ -56,7 +56,7 @@ public sealed class ContentSeeder
     private Guid ElementTypeKey(string alias) =>
         _contentTypeService.Get(alias)?.Key ?? throw new InvalidOperationException($"Element type '{alias}' not found.");
 
-    private void SetHome(IContent home, IReadOnlyDictionary<string, Guid> media, IContent bread, IContent news, IContent visit)
+    private void SetHome(IContent home, IReadOnlyDictionary<string, Guid> media, IContent bread, IContent about, IContent news, IContent visit)
     {
         home.SetValue("siteName", "Rågklocka");
         home.SetValue("logoText", "Rågklocka");
@@ -70,33 +70,34 @@ public sealed class ContentSeeder
 
         SetBlocks(
             home,
-            Hero(
-                "Rye bread and slow mornings.",
-                "We bake sourdough rye, wheat loaves and cardamom buns every morning in the room behind the counter. Come early for the first bake, or late for whatever is left.",
-                media["hero-flour"],
-                "See what we bake",
-                bread),
-            BakeBoard(
-                "Dagens bröd",
-                "Today's bake, with the time each batch came out of the oven. Prices in SEK.",
-                Bake("Rye loaf, sunflower seeds", "Rågbröd · 900 g", "07:10", 68),
-                Bake("Country wheat loaf", "Lantbröd · 750 g", "07:40", 62),
-                Bake("Cardamom bun", "Kardemummabulle", "08:15", 38),
-                Bake("Cinnamon bun", "Kanelbulle", "08:15", 36),
-                Bake("Rye crispbread", "Knäckebröd · 250 g bag", "06:40", 55),
-                Bake("Croissant", "Saturdays only", "09:00", 34, soldOut: true)),
-            Story(
-                "A bakery with a café in the front",
-                "<p>The ovens are twelve steps from the tables. Most mornings you can hear the first loaves crackle as they cool on the rack by the window.</p>" +
-                "<p>We serve coffee from a small roaster, buns straight from the tray and open sandwiches on our own rye until the bread runs out.</p>",
-                media["cafe-interior"],
-                "The café seats twenty-two. The long table is first come, first served."),
-            CardRow(
-                "Plan your visit",
-                Card("Our bread", "Rye, wheat and what we bake on which day.", media["loaf"], bread),
-                Card("News from the bakery", "Seasonal bakes, harvest notes and changes to opening hours.", media["croissants"], news),
-                Card("Find us", "Opening hours, the address and how to order for a group.", media["coffee"], visit)),
-            Quote("Rye takes its time. We let it.", "Written above the proofing shelf"));
+            Cinema(
+                media,
+                visit,
+                new Scene("Rågklocka", Tags: "Sourdough rye, Cardamom buns, Café"),
+                new Scene(
+                    "The rye sets the clock.",
+                    "The first loaves come out at ten past seven. The dough has been rising since the afternoon before.",
+                    Facts: ("36 h", "Longest rise for the rye", "07:10", "First loaf out of the oven")),
+                new Scene(
+                    "The café is twelve steps away.",
+                    "Coffee from a small roaster, buns straight from the tray and open sandwiches on our own rye.",
+                    Cta: "Plan your visit"),
+                new Board(
+                    "Dagens bröd",
+                    "Today's bake, with the time each batch came out of the oven. Prices in SEK.",
+                    [
+                        Bake("Seeded rye loaf", "Rågbröd · 900 g", "07:10", 68, OptionalImage(media, "bake-rye-loaf")),
+                        Bake("Country wheat loaf", "Lantbröd · 750 g", "07:40", 62, OptionalImage(media, "bake-wheat-loaf")),
+                        Bake("Cardamom bun", "Kardemummabulle", "08:15", 38, OptionalImage(media, "bake-cardamom-bun")),
+                        Bake("Cinnamon bun", "Kanelbulle", "08:15", 36, OptionalImage(media, "bake-cinnamon-bun")),
+                        Bake("Rye crispbread", "Knäckebröd · 250 g bag", "06:40", 55, OptionalImage(media, "bake-crispbread")),
+                        Bake("Croissant", "Saturdays only", "09:00", 34, OptionalImage(media, "bake-croissant"), soldOut: true),
+                    ]),
+                CinemaCard("From 07:00", "First bake", "Rye and country loaves, still crackling on the rack by the window.", media, "icon-loaf", bread),
+                CinemaCard("Tue to Sat", "Cardamom buns", "Butter, fresh cardamom and a long cold rise. On Fridays, all day.", media, "icon-bun", bread),
+                CinemaCard("Saturday", "Croissants", "One batch of ninety, three days in the making. Gone by eleven.", media, "icon-bun", news),
+                CinemaCard("All day", "Open sandwiches", "On our own rye, served at the long table until the bread runs out.", media, "icon-cup", visit),
+                CinemaCard("Harvest", "Local grain", "Rye grown twenty minutes north and stone-milled in small batches.", media, "icon-loaf", about)));
     }
 
     private void SetBread(IContent page, IReadOnlyDictionary<string, Guid> media)
@@ -216,25 +217,66 @@ public sealed class ContentSeeder
         }
     }
 
-    private static GridBlock Hero(string heading, string text, Guid image, string ctaLabel, IContent ctaLink) =>
-        new("heroBlock", 12, new Dictionary<string, object?>
+    private sealed record Scene(
+        string Heading,
+        string? Text = null,
+        string? Tags = null,
+        (string Value1, string Label1, string Value2, string Label2)? Facts = null,
+        string? Cta = null);
+
+    // Layers come from Seeding/Media/Layers when those files exist. Without them the sky and
+    // close-up fall back to photos, and the cutout layers stay empty.
+    private sealed record Board(string Heading, string Intro, GridBlock[] Bakes);
+
+    private GridBlock Cinema(IReadOnlyDictionary<string, Guid> media, IContent ctaLink, Scene intro, Scene first, Scene second, Board board, params GridBlock[] cards)
+    {
+        object? Layer(string name, string? fallback = null) =>
+            media.TryGetValue(name, out Guid key) || (fallback is not null && media.TryGetValue(fallback, out key))
+                ? BlockGridValue.Image(key)
+                : null;
+
+        return new("cinemaBlock", 12, new Dictionary<string, object?>
         {
-            ["heading"] = heading,
-            ["text"] = text,
-            ["image"] = BlockGridValue.Image(image),
-            ["ctaLabel"] = ctaLabel,
+            ["heading"] = intro.Heading,
+            ["intro"] = intro.Text,
+            ["tags"] = intro.Tags,
+            ["firstHeading"] = first.Heading,
+            ["firstText"] = first.Text,
+            ["fact1Value"] = first.Facts?.Value1,
+            ["fact1Label"] = first.Facts?.Label1,
+            ["fact2Value"] = first.Facts?.Value2,
+            ["fact2Label"] = first.Facts?.Label2,
+            ["secondHeading"] = second.Heading,
+            ["secondText"] = second.Text,
+            ["ctaLabel"] = second.Cta,
             ["ctaLink"] = BlockGridValue.Document(ctaLink.Key),
+            ["cards"] = BlockGridValue.BlockList(cards, ElementTypeKey),
+            ["boardHeading"] = board.Heading,
+            ["boardIntro"] = board.Intro,
+            ["bakes"] = BlockGridValue.BlockList(board.Bakes, ElementTypeKey),
+            ["skyLayer"] = Layer("layer-sky", "rye-field"),
+            ["backLayer"] = Layer("layer-back"),
+            ["foregroundLayer"] = Layer("layer-foreground"),
+            ["splitLeftLayer"] = Layer("layer-split-left"),
+            ["closeUpLayer"] = Layer("layer-close-up", "loaf"),
         });
+    }
 
-    private GridBlock BakeBoard(string heading, string intro, params GridBlock[] bakes) =>
-        new("bakeBoardBlock", 12, new Dictionary<string, object?>
+    private static GridBlock CinemaCard(string kicker, string title, string text, IReadOnlyDictionary<string, Guid> media, string icon, IContent link) =>
+        new("cinemaCardBlock", 12, new Dictionary<string, object?>
         {
-            ["heading"] = heading,
-            ["intro"] = intro,
-            ["items"] = BlockGridValue.BlockList(bakes, ElementTypeKey),
+            ["kicker"] = kicker,
+            ["title"] = title,
+            ["text"] = text,
+            ["icon"] = OptionalImage(media, icon),
+            ["link"] = BlockGridValue.Document(link.Key),
         });
 
-    private static GridBlock Bake(string name, string note, string readyAt, int price, bool soldOut = false) =>
+    /// <summary>Media Picker value for an optional seeded file, or null when it was not imported.</summary>
+    private static object? OptionalImage(IReadOnlyDictionary<string, Guid> media, string name) =>
+        media.TryGetValue(name, out Guid key) ? BlockGridValue.Image(key) : null;
+
+    private static GridBlock Bake(string name, string note, string readyAt, int price, object? image = null, bool soldOut = false) =>
         new("bakeItemBlock", 12, new Dictionary<string, object?>
         {
             ["name"] = name,
@@ -242,6 +284,7 @@ public sealed class ContentSeeder
             ["readyAt"] = readyAt,
             ["price"] = price,
             ["soldOut"] = soldOut,
+            ["image"] = image,
         });
 
     private static GridBlock Story(string heading, string markup, Guid image, string caption, bool imageOnLeft = false) =>
@@ -262,19 +305,4 @@ public sealed class ContentSeeder
 
     private static GridBlock Quote(string quote, string attribution) =>
         new("quoteBlock", 12, new Dictionary<string, object?> { ["quote"] = quote, ["attribution"] = attribution });
-
-    private static GridBlock CardRow(string heading, params GridBlock[] cards) =>
-        new("cardRowBlock", 12, new Dictionary<string, object?> { ["heading"] = heading })
-        {
-            Area = new GridArea(SchemaSeeder.CardsAreaKey, cards),
-        };
-
-    private static GridBlock Card(string title, string text, Guid image, IContent link) =>
-        new("cardBlock", 4, new Dictionary<string, object?>
-        {
-            ["title"] = title,
-            ["text"] = text,
-            ["image"] = BlockGridValue.Image(image),
-            ["link"] = BlockGridValue.Document(link.Key),
-        });
 }

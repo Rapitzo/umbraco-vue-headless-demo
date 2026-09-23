@@ -21,7 +21,7 @@ const templates: Record<Page['contentType'], Component> = {
 }
 
 const route = useRoute()
-const { settings } = useSite()
+const { settings, pageType } = useSite()
 const page = ref<Page | null>(null)
 const notFound = ref(false)
 const error = ref<string | null>(null)
@@ -35,8 +35,10 @@ watch(
       const result = await getPageByPath(path)
       if (!Object.hasOwn(templates, result.contentType)) throw new NotFoundError(path)
       page.value = result
+      pageType.value = result.contentType
     } catch (e) {
       page.value = null
+      pageType.value = null
       if (e instanceof NotFoundError) notFound.value = true
       else error.value = e instanceof Error ? e.message : String(e)
     }

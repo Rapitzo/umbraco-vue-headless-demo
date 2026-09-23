@@ -62,7 +62,7 @@ function onSubmit() {
 
 label {
   margin-top: var(--space-sm);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-label);
   font-weight: 600;
   letter-spacing: var(--tracking-label);
@@ -114,10 +114,9 @@ textarea:user-invalid {
   border-radius: 0;
   background: var(--color-ink);
   color: var(--color-paper);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-md);
   font-weight: 700;
-  font-stretch: 85%;
   cursor: pointer;
   transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
 }

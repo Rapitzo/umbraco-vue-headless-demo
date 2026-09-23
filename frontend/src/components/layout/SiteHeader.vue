@@ -87,8 +87,7 @@ const isSection = (path: string) => route.path.startsWith(path)
 .wordmark {
   font-family: var(--font-display);
   font-size: clamp(2.25rem, 4vw + 1rem, 4.5rem);
-  font-weight: 800;
-  font-stretch: 75%;
+  font-weight: 400;
   letter-spacing: -0.04em;
   line-height: 0.9;
   color: var(--color-ink);
@@ -137,10 +136,9 @@ const isSection = (path: string) => route.path.startsWith(path)
   display: block;
   padding-block: var(--space-xs);
   border-top: var(--rule);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-md);
   font-weight: 700;
-  font-stretch: 85%;
   color: var(--color-ink);
   text-decoration: none;
   white-space: nowrap;
@@ -183,10 +181,9 @@ const isSection = (path: string) => route.path.startsWith(path)
     padding: var(--space-3xs) 0;
     border-top: 0;
     border-bottom: 2px solid transparent;
-    font-family: var(--font-display);
+    font-family: var(--font-ui);
     font-size: var(--text-label);
     font-weight: 600;
-    font-stretch: 100%;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
   }

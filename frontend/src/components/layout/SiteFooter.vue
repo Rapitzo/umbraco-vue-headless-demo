@@ -1,19 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSite } from '../../composables/useSite'
 import ContactDetails from '../ContactDetails.vue'
 import OpeningHours from '../OpeningHours.vue'
 
-const { settings } = useSite()
+const { settings, pageType } = useSite()
+// The contact page shows the address and opening hours itself.
+const showDetails = computed(() => pageType.value !== 'contactPage')
 </script>
 
 <template>
   <footer v-if="settings" class="site-footer page-grid">
-    <section class="site-footer__hours" aria-labelledby="footer-hours">
+    <section v-if="showDetails" class="site-footer__hours" aria-labelledby="footer-hours">
       <h2 id="footer-hours" class="label">Öppettider · Opening hours</h2>
       <OpeningHours :hours="settings.openingHours" />
     </section>
 
-    <section class="site-footer__visit" aria-labelledby="footer-visit">
+    <section v-if="showDetails" class="site-footer__visit" aria-labelledby="footer-visit">
       <h2 id="footer-visit" class="label">Find us</h2>
       <ContactDetails :settings="settings" />
     </section>
@@ -66,8 +69,7 @@ const { settings } = useSite()
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3.5rem, 12vw, 10rem);
-  font-weight: 800;
-  font-stretch: 75%;
+  font-weight: 400;
   letter-spacing: -0.05em;
   line-height: 0.8;
   color: var(--color-ink);

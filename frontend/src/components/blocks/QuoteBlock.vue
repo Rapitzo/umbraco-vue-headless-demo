@@ -30,8 +30,7 @@ blockquote p {
   text-wrap: balance;
   font-family: var(--font-display);
   font-size: var(--text-xl);
-  font-weight: 700;
-  font-stretch: 80%;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: var(--tracking-display);
   text-indent: -0.4em;

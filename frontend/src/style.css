@@ -1,8 +1,8 @@
 /* Hallmark · genre: editorial · macrostructure: Photographic · theme: custom
  * vibe: "Nordic bakery, rye, printed price list, morning light"
  * paper oklch(95.5% 0.014 80) · accent oklch(47% 0.11 45) rye brown
- * display: Bricolage Grotesque 800 condensed · body: Newsreader
- * axes: light / display-heavy grotesk / warm
+ * display: Gloock (high-contrast editorial serif) · body and UI: Schibsted Grotesk
+ * axes: light / serif display over a plain Nordic grotesk / warm
  * hero: H6 photographic fold (full-bleed, headline overlaid lower-left)
  * nav: N6 masthead (issue line + centred wordmark) · footer: Ft1 mast-headed (hours-led)
  * signature: bake board (F3 tabular spec sheet with dot leaders)
@@ -22,8 +22,10 @@
   --color-scrim: oklch(18% 0.02 50 / 0.62);
   --color-focus: oklch(48% 0.16 255);
 
-  --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', sans-serif;
-  --font-body: 'Newsreader Variable', Georgia, serif;
+  --font-display: 'Gloock', Georgia, serif;
+  --font-body: 'Schibsted Grotesk Variable', system-ui, sans-serif;
+  /* Labels, navigation, times and prices: the body grotesk, never the display serif. */
+  --font-ui: var(--font-body);
 
   /* Type scale: perfect fourth (1.333) from a 19px body. */
   --text-label: 0.8125rem;
@@ -34,7 +36,7 @@
   --text-xl: clamp(2.25rem, 3vw + 1rem, 3.5rem);
   --text-display: clamp(3.25rem, 7vw + 1rem, 7rem);
 
-  --tracking-display: -0.035em;
+  --tracking-display: -0.01em;
   --tracking-label: 0.12em;
 
   --space-3xs: 0.25rem;
@@ -98,8 +100,7 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 800;
-  font-stretch: 75%;
+  font-weight: 400;
   font-style: normal;
   line-height: 0.95;
   letter-spacing: var(--tracking-display);
@@ -145,10 +146,9 @@ a:hover {
 }
 
 .label {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-label);
   font-weight: 600;
-  font-stretch: 100%;
   letter-spacing: var(--tracking-label);
   line-height: 1.3;
   text-transform: uppercase;
@@ -166,10 +166,9 @@ a:hover {
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-2xs);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: var(--text-md);
   font-weight: 700;
-  font-stretch: 85%;
   letter-spacing: -0.01em;
   white-space: nowrap;
   color: var(--color-ink);

@@ -73,11 +73,50 @@ export type StoryBlock = ApiElement<
 
 export type BakeItemBlock = ApiElement<
   'bakeItemBlock',
-  { name: string; note: string | null; readyAt: string | null; price: number | null; soldOut: boolean | null }
+  {
+    name: string
+    note: string | null
+    readyAt: string | null
+    price: number | null
+    soldOut: boolean | null
+    image: MediaItem[] | null
+  }
 >
 export type BakeBoardBlock = ApiElement<
   'bakeBoardBlock',
   { heading: string; intro: string | null; items: BlockListModel<BakeItemBlock> | null }
+>
+
+export type CinemaCardBlock = ApiElement<
+  'cinemaCardBlock',
+  { kicker: string | null; title: string; text: string | null; icon: MediaItem[] | null; link: ContentLink | null }
+>
+export type CinemaBlock = ApiElement<
+  'cinemaBlock',
+  {
+    heading: string
+    intro: string | null
+    tags: string | null
+    firstHeading: string | null
+    firstText: string | null
+    fact1Value: string | null
+    fact1Label: string | null
+    fact2Value: string | null
+    fact2Label: string | null
+    secondHeading: string | null
+    secondText: string | null
+    ctaLabel: string | null
+    ctaLink: ContentLink | null
+    cards: BlockListModel<CinemaCardBlock> | null
+    boardHeading: string | null
+    boardIntro: string | null
+    bakes: BlockListModel<BakeItemBlock> | null
+    skyLayer: MediaItem[] | null
+    backLayer: MediaItem[] | null
+    foregroundLayer: MediaItem[] | null
+    splitLeftLayer: MediaItem[] | null
+    closeUpLayer: MediaItem[] | null
+  }
 >
 
 // Discriminated union on contentType: add new block types here and in BlockGrid.vue.
@@ -90,6 +129,7 @@ export type GridBlock =
   | CardBlock
   | StoryBlock
   | BakeBoardBlock
+  | CinemaBlock
 
 export interface BlockListModel<T> {
   items: { content: T }[]

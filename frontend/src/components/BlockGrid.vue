@@ -3,6 +3,7 @@ import { computed, type Component } from 'vue'
 import type { BlockGridItem, BlockGridModel, GridBlock } from '../api/types'
 import BakeBoardBlock from './blocks/BakeBoardBlock.vue'
 import CardRowBlock from './blocks/CardRowBlock.vue'
+import CinemaBlock from './blocks/CinemaBlock.vue'
 import HeroBlock from './blocks/HeroBlock.vue'
 import ImageBlock from './blocks/ImageBlock.vue'
 import QuoteBlock from './blocks/QuoteBlock.vue'
@@ -21,6 +22,7 @@ interface BlockView {
 // without a view. Blocks the frontend does not know are skipped, not rendered broken.
 // Cards only appear inside a card row's area, which renders them itself.
 const registry: Record<Exclude<GridBlock['contentType'], 'cardBlock'>, BlockView> = {
+  cinemaBlock: { component: CinemaBlock, fullBleed: true },
   heroBlock: { component: HeroBlock, fullBleed: true },
   bakeBoardBlock: { component: BakeBoardBlock, fullBleed: true },
   storyBlock: { component: StoryBlock, fullBleed: true },
