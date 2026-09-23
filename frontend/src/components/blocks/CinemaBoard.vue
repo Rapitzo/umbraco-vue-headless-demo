@@ -172,7 +172,6 @@ function photo(bake: BakeItemBlock): string | null {
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 

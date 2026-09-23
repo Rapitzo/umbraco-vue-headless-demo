@@ -138,7 +138,7 @@ frontend/
 
 ## Credits
 
-All photos are from [Unsplash](https://unsplash.com) and used under the [Unsplash License](https://unsplash.com/license), which allows free use without permission. Each one was downloaded, resized to 1600 px wide and recompressed, and is stored in `backend/Seeding/Media/`.
+The photos in `backend/Seeding/Media/` are from [Unsplash](https://unsplash.com) and used under the [Unsplash License](https://unsplash.com/license), which allows free use without permission. Each one was downloaded, resized to 1600 px wide and recompressed, and is stored in `backend/Seeding/Media/`.
 
 | File | Photographer | Source |
 | --- | --- | --- |
@@ -152,7 +152,9 @@ All photos are from [Unsplash](https://unsplash.com) and used under the [Unsplas
 | `croissants.jpg` | Conor Brown ([@commonboxturtle](https://unsplash.com/@commonboxturtle)) | https://unsplash.com/photos/a-bunch-of-croissants-that-are-on-a-table-sqkXyyj4WdE |
 | `coffee.jpg` | Daniel Seßler ([@danielsessler](https://unsplash.com/@danielsessler)) | https://unsplash.com/photos/two-cups-of-coffee-sitting-on-top-of-a-wooden-table-wYKEz3GPdCA |
 
-Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Newsreader](https://fonts.google.com/specimen/Newsreader), both under the SIL Open Font License, self-hosted through Fontsource.
+The scene layers, product images and icons in `backend/Seeding/Media/Layers/` were generated with OpenAI's image generation (via the Codex CLI) for this demo. They are not photographs.
+
+Fonts: [Gloock](https://fonts.google.com/specimen/Gloock) and [Schibsted Grotesk](https://fonts.google.com/specimen/Schibsted+Grotesk), both under the SIL Open Font License, self-hosted through Fontsource.
 
 ## License
 

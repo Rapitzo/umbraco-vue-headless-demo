@@ -19,7 +19,7 @@ const rows = computed(() => parseOpeningHours(props.hours))
 <style scoped>
 .hours {
   margin: 0;
-  font-variant-numeric: tabular-nums lining-nums;
+  font-variant-numeric: lining-nums;
 }
 
 .hours__row {

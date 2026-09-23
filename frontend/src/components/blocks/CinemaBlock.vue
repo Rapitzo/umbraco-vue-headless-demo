@@ -207,10 +207,9 @@ const slider = ref<InstanceType<typeof CinemaCards> | null>(null)
   width: min(94vw, 1780px);
   margin: 0;
   color: var(--cinema-paper);
-  font-size: clamp(4.5rem, 17vw, 16rem);
+  font-size: clamp(3rem, 16.5vw, 16rem);
   line-height: 0.78;
   text-align: center;
-  text-transform: uppercase;
   transform: translate3d(-50%, var(--title-y), 0) scale(var(--title-scale));
   opacity: var(--title-opacity);
   will-change: transform, opacity;
