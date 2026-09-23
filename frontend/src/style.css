@@ -1,0 +1,67 @@
+:root {
+  --text: #3d3a45;
+  --text-h: #111016;
+  --muted: #6b6375;
+  --bg: #fbfaf8;
+  --surface: #fff;
+  --border: #e5e4e7;
+  --accent: #3544b1;
+
+  font: 17px/1.6 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #cfcbd6;
+    --text-h: #f4f2f7;
+    --muted: #9a94a6;
+    --bg: #15141a;
+    --surface: #1d1c23;
+    --border: #2e2c36;
+    --accent: #8f9cff;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2 { color: var(--text-h); line-height: 1.25; }
+a { color: var(--accent); }
+
+.shell { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+.top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 40px; }
+.brand { font-weight: 700; color: var(--text-h); text-decoration: none; }
+.tag { color: var(--muted); font-size: 0.85rem; }
+footer { margin-top: 64px; color: var(--muted); font-size: 0.85rem; }
+
+.page-header { margin-bottom: 32px; }
+.page-header h1 { font-size: 2rem; margin: 0 0 8px; }
+.lead { font-size: 1.1rem; margin: 0 0 8px; }
+time { color: var(--muted); font-size: 0.85rem; }
+
+.article-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+.card {
+  display: block;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+}
+.card:hover { border-color: var(--accent); }
+.card h2 { font-size: 1.2rem; margin: 0 0 6px; }
+.card p { margin: 0; }
+
+.back { display: inline-block; margin-bottom: 24px; text-decoration: none; }
+.status { color: var(--muted); }
+.error { color: #c0392b; }
+
+.text-block h2 { font-size: 1.3rem; margin: 32px 0 8px; }
+.text-block p { margin: 0 0 16px; }
+.quote-block { margin: 32px 0; padding-left: 20px; border-left: 3px solid var(--accent); }
+.quote-block blockquote { margin: 0; font-size: 1.15rem; color: var(--text-h); }
+.quote-block figcaption { margin-top: 8px; color: var(--muted); font-size: 0.9rem; }
