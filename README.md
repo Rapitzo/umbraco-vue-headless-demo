@@ -6,9 +6,9 @@ A small client-style website built the way an agency would build it: Umbraco 17 
 
 Built by Rickard Lindbom · Lindforge Digital Studio · [Available for contract work](https://portfolio-rick.vercel.app/work-with-me)
 
-![Rågklocka front page at desktop width](docs/screenshots/home-desktop.jpg)
+![The Rågklocka front page at desktop width, as five moments of its scroll story: the title behind a rye field and the bakery, a bread close-up, the café panel, the card slider, and today's bakes](docs/screenshots/home-desktop.jpg)
 
-<img src="docs/screenshots/home-mobile.jpg" alt="The front page on a phone, with the hero photo and the bake board" width="260">
+<img src="docs/screenshots/home-mobile.jpg" alt="The front page on a phone, as four moments of its scroll story: the title and bakery, the bread close-up, the card slider, and today's bakes" width="260">
 
 ## What it demonstrates
 

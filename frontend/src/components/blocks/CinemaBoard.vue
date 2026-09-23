@@ -32,13 +32,14 @@ function photo(bake: BakeItemBlock): string | null {
         :style="{ '--i': i, '--n': bakes.length }"
       >
         <img v-if="photo(bake)" class="bake-card__photo" :src="photo(bake)!" alt="" />
+        <span class="bake-card__time">
+          <template v-if="bake.properties.readyAt">
+            <span lang="sv">Ur ugnen</span> <span class="bake-card__clock">{{ bake.properties.readyAt }}</span>
+          </template>
+        </span>
         <h3 class="bake-card__name">{{ bake.properties.name }}</h3>
         <p v-if="bake.properties.note" class="bake-card__note">{{ bake.properties.note }}</p>
         <div class="bake-card__foot">
-          <span v-if="bake.properties.readyAt" class="bake-card__time">
-            <span lang="sv">Ur ugnen</span>
-            <span class="bake-card__clock">{{ bake.properties.readyAt }}</span>
-          </span>
           <span v-if="bake.properties.soldOut" class="bake-card__stamp">Sold out</span>
           <span v-else class="bake-card__price">{{ bake.properties.price }}<span class="bake-card__unit"> kr</span></span>
         </div>
@@ -85,12 +86,12 @@ function photo(bake: BakeItemBlock): string | null {
   text-shadow: 0 2px 18px oklch(15% 0.02 50 / 0.45);
 }
 
-/* One row of six on wide screens. Each card spans three shared rows (name, note, footer)
+/* One row of six on wide screens. Each card spans four shared rows (time, name, note, price)
    through subgrid, so a name that wraps grows that row for every card beside it and the
    notes and footers stay level, with no space reserved when nothing wraps. */
 .cinema-board__shelf {
   display: grid;
-  grid-template-rows: repeat(3, auto);
+  grid-template-rows: repeat(4, auto);
   grid-auto-columns: minmax(0, 1fr);
   grid-auto-flow: column;
   gap: 0 clamp(12px, 1.15vw, 20px);
@@ -106,7 +107,7 @@ function photo(bake: BakeItemBlock): string | null {
 
   position: relative;
   display: grid;
-  grid-row: span 3;
+  grid-row: span 4;
   grid-template-rows: subgrid;
   row-gap: 6px;
   margin-top: var(--lift);
@@ -154,17 +155,15 @@ function photo(bake: BakeItemBlock): string | null {
 .bake-card__foot {
   display: flex;
   align-items: end;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--space-xs);
-  grid-row: 3;
-  align-self: end;
+  grid-row: 4;
+  align-self: start;
   padding-top: 12px;
   border-top: var(--rule);
 }
 
-/* Label and time on two fixed lines, so the footer is the same on every card. */
 .bake-card__time {
-  display: grid;
   line-height: 1.25;
   font-family: var(--font-ui);
   font-size: var(--text-label);
@@ -172,7 +171,6 @@ function photo(bake: BakeItemBlock): string | null {
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-muted);
-  white-space: nowrap;
 }
 
 .bake-card__clock {
@@ -228,7 +226,7 @@ function photo(bake: BakeItemBlock): string | null {
 
 @media (max-width: 800px) {
   .cinema-board {
-    --lift: 44px;
+    --lift: 36px;
 
     left: 16px;
     right: 16px;
@@ -238,8 +236,9 @@ function photo(bake: BakeItemBlock): string | null {
     font-size: var(--text-xl);
   }
 
+  /* The prices already say kr; on a phone the shelf needs the room. */
   .cinema-board__intro {
-    font-size: var(--text-sm);
+    display: none;
   }
 
   .cinema-board__shelf {
@@ -275,6 +274,17 @@ function photo(bake: BakeItemBlock): string | null {
 
   .bake-card__price {
     font-size: 1.25rem;
+  }
+}
+
+/* Short phones: drop the notes (on every card at once, so rows stay level) to fit the shelf. */
+@media (max-width: 800px) and (max-height: 720px) {
+  .cinema-board {
+    --lift: 30px;
+  }
+
+  .bake-card__note {
+    display: none;
   }
 }
 </style>

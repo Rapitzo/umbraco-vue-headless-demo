@@ -125,7 +125,7 @@ defineExpose({ move })
   flex-direction: column;
   justify-content: space-between;
   flex: 0 0 clamp(320px, 19.4vw, 430px);
-  height: 220px;
+  height: 240px;
   padding: 24px;
   overflow: hidden;
   border-radius: 24px;
@@ -185,10 +185,6 @@ defineExpose({ move })
   margin: 10px 0 0;
   font-size: var(--text-sm);
   line-height: 1.3;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
 }
 
 @media (max-width: 640px) {

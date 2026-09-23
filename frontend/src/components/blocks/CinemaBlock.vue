@@ -288,7 +288,7 @@ const slider = ref<InstanceType<typeof CinemaCards> | null>(null)
 /* Slider arrows, in screen space under the cards. */
 .cinema__controls {
   left: 48px;
-  top: calc(var(--cards-screen-top) + 220px + 16px);
+  top: calc(var(--cards-screen-top) + 240px + 16px);
   z-index: 5;
   display: flex;
   gap: 14px;
